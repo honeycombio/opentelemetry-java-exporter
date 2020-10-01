@@ -1,0 +1,89 @@
+plugins {
+    id 'java-library'
+	id 'maven-publish'
+	id 'signing'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+	mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+			groupId = 'io.honeycomb'
+            artifactId = 'opentelemetry-exporter-java'
+            version = '0.1.0'
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Honeycomb OpenTelemetry Exporter for Java'
+                description = 'Exports OpenTelemetry data to Honeycomb.'
+                url = 'https://docs.honeycomb.io/getting-data-in/open-standards/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Honeycomb'
+                        name = 'Honeycomb'
+                        email = 'support@honeycomb.io'
+                        organization = 'Honeycomb'
+                        organizationUrl = 'https://honeycomb.io'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/honeycombio/opentelemetry-exporter-java'
+                    connection = 'scm:git:git@github.com:honeycombio/opentelemetry-exporter-java.git'
+                    developerConnection = 'scm:git:git@github.com:honeycombio/opentelemetry-exporter-java.git'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			if (hasProperty ("sonatype.username"))
+				credentials {
+					username sonatype.username
+					password sonatype.password
+				}
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+task install(dependsOn: publishToMavenLocal) {
+    group = 'Publishing'
+    description = 'Installs artifacts to local Maven repository'
+}
