@@ -11,19 +11,24 @@ import java.util.concurrent.TimeUnit;
 
 public class HoneycombSpanExporter implements SpanExporter {
 
-    final HoneyClient client;
+    private final HoneyClient client;
+    private final String serviceName;
 
-    public HoneycombSpanExporter(final HoneyClient client) {
+    public HoneycombSpanExporter(final HoneyClient client, final String serviceName) {
         if (client == null) {
             throw new IllegalArgumentException();
         }
+        if (serviceName == null || serviceName.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
         this.client = client;
+        this.serviceName = serviceName;
     }
 
     @Override
-    public CompletableResultCode export(Collection<SpanData> openTelemetrySpans) {
+    public CompletableResultCode export(final Collection<SpanData> openTelemetrySpans) {
         for (SpanData span : openTelemetrySpans) {
-            createHoneycombEvent(client, span).sendPresampled();
+            createHoneycombEvent(client, serviceName, span).sendPresampled();
         }
         return CompletableResultCode.ofSuccess();
     }
@@ -39,12 +44,13 @@ public class HoneycombSpanExporter implements SpanExporter {
         return CompletableResultCode.ofSuccess();
     }
 
-    static Event createHoneycombEvent(HoneyClient client, SpanData span) {
+    static Event createHoneycombEvent(final HoneyClient client, final String serviceName, final SpanData span) {
         long start = TimeUnit.NANOSECONDS.toMillis(span.getStartEpochNanos());
         long duration = TimeUnit.NANOSECONDS.toMillis(Math.max(1, span.getEndEpochNanos() - span.getStartEpochNanos()));
 
         final Event event = client.createEvent()
             .setTimestamp(start)
+            .addField(AttributeNames.SERVICE_NAME_FIELD, serviceName)
             .addField(AttributeNames.TRACE_ID_FIELD, span.getTraceId().toLowerBase16())
             .addField(AttributeNames.SPAN_ID_FIELD, span.getSpanId().toLowerBase16())
             .addField(AttributeNames.DURATION_FIELD, duration);
@@ -74,7 +80,7 @@ public class HoneycombSpanExporter implements SpanExporter {
         return event;
     }
 
-    static void addAttributeAsFields(Event event, String key, AttributeValue value) {
+    static void addAttributeAsFields(final Event event, final String key, final AttributeValue value) {
         switch(value.getType()) {
             case STRING:
                 event.addField(key, value.getStringValue());

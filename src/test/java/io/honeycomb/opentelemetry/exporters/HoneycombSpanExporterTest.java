@@ -24,16 +24,22 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class HoneycombSpanExporterTest {
 
+    private final String serviceName = "my-servie";
     @Mock private HoneyClient mockClient;
     @Mock private Event mockEvent;
     @Mock private Resource mockResource;
 
     @Test public void testNullClientThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new HoneycombSpanExporter(null));
+        assertThrows(IllegalArgumentException.class, () -> new HoneycombSpanExporter(null, null));
+    }
+
+    @Test public void testNullOrEmptyServiceNameThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> new HoneycombSpanExporter(mockClient, null));
+        assertThrows(IllegalArgumentException.class, () -> new HoneycombSpanExporter(mockClient, ""));
     }
 
     @Test public void testCallingShutdownClosesClient() {
-        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient);
+        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient, serviceName);
         CompletableResultCode result = exporter.shutdown();
 
         assertTrue(result.isSuccess());
@@ -42,7 +48,7 @@ public class HoneycombSpanExporterTest {
     }
 
     @Test public void testFlushDoesNothing() {
-        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient);
+        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient, serviceName);
         CompletableResultCode result = exporter.flush();
 
         assertTrue(result.isSuccess());
@@ -81,11 +87,12 @@ public class HoneycombSpanExporterTest {
             .setHasEnded(true)
             .build();
 
-        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient);
+        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient, serviceName);
         CompletableResultCode result = exporter.export(Arrays.asList(span));
 
         assertTrue(result.isSuccess());
         verify(mockClient, times(1)).createEvent();
+        verify(mockEvent, times(1)).addField(AttributeNames.SERVICE_NAME_FIELD, serviceName);
         verify(mockEvent, times(1)).addField(AttributeNames.TRACE_ID_FIELD, span.getTraceId().toLowerBase16());
         verify(mockEvent, times(1)).addField(AttributeNames.SPAN_ID_FIELD, span.getSpanId().toLowerBase16());
         verify(mockEvent, times(1)).addField(AttributeNames.SPAN_NAME_FIELD, span.getName());
