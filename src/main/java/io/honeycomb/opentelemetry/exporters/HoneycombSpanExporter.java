@@ -9,6 +9,8 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 public class HoneycombSpanExporter implements SpanExporter {
 
     private final HoneyClient client;
@@ -18,7 +20,7 @@ public class HoneycombSpanExporter implements SpanExporter {
         if (client == null) {
             throw new IllegalArgumentException();
         }
-        if (serviceName == null || serviceName.isEmpty()) {
+        if (isNullOrEmpty(serviceName)) {
             throw new IllegalArgumentException();
         }
         this.client = client;
@@ -80,7 +82,7 @@ public class HoneycombSpanExporter implements SpanExporter {
         return event;
     }
 
-    static void addAttributeAsFields(final Event event, final String key, final AttributeValue value) {
+    private static void addAttributeAsFields(final Event event, final String key, final AttributeValue value) {
         switch(value.getType()) {
             case STRING:
                 event.addField(key, value.getStringValue());
@@ -95,5 +97,9 @@ public class HoneycombSpanExporter implements SpanExporter {
                 event.addField(key, value.getDoubleValue());
                 break;
         }
+    }
+
+    public static HoneycombSpanExporterBuilder newBuilder(String serviceName) {
+        return new HoneycombSpanExporterBuilder(serviceName);
     }
 }
