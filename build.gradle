@@ -36,7 +36,7 @@ dependencies {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-			groupId = 'io.honeycomb'
+			groupId = 'io.honeycomb.opentelemetry'
             artifactId = 'opentelemetry-exporter-java'
             version = '0.1.0'
             versionMapping {
