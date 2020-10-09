@@ -1,0 +1,6 @@
+rootProject.name = 'honeycomb-opentelemry-java'
+
+include ":exporter-trace"
+
+project(':exporter-trace').projectDir =
+    "$rootDir/exporters/trace" as File

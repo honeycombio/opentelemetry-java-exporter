@@ -1,21 +1,20 @@
 # Gradle
-.gradle
+.gradle/
+out/
+.project
+.settings
+.classpath
+
+# IDE(A) files
+.idea/
+.settings/
+.vscode/
+.classpath
+.project
+
+# Build artifacts
 build/
-
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Eclipse
-/.classpath
-/.settings/
-/.project
-/bin/
-
-# IntelliJ
-.idea
-*.iml
-*.ipr
-*.iws
+bin/
 
 # Misc
 *.log
