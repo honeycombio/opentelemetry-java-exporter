@@ -1,6 +1,10 @@
 rootProject.name = 'honeycomb-opentelemry-java'
 
 include ":exporter-trace"
+include ":deterministic-sampler"
 
 project(':exporter-trace').projectDir =
     "$rootDir/exporters/trace" as File
+
+project(':deterministic-sampler').projectDir =
+    "$rootDir/samplers/deterministic" as File
