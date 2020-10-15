@@ -2,7 +2,9 @@ package io.honeycomb.opentelemetry.exporters;
 
 import io.honeycomb.libhoney.Event;
 import io.honeycomb.libhoney.HoneyClient;
-import io.opentelemetry.common.AttributeValue;
+import io.opentelemetry.common.AttributeConsumer;
+import io.opentelemetry.common.Attributes;
+import io.opentelemetry.common.AttributeKey;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
@@ -53,15 +55,15 @@ public class HoneycombSpanExporter implements SpanExporter {
         final Event event = client.createEvent()
             .setTimestamp(start)
             .addField(AttributeNames.SERVICE_NAME_FIELD, serviceName)
-            .addField(AttributeNames.TRACE_ID_FIELD, span.getTraceId().toLowerBase16())
-            .addField(AttributeNames.SPAN_ID_FIELD, span.getSpanId().toLowerBase16())
+            .addField(AttributeNames.TRACE_ID_FIELD, span.getTraceId())
+            .addField(AttributeNames.SPAN_ID_FIELD, span.getSpanId())
             .addField(AttributeNames.DURATION_FIELD, duration);
 
         if (!span.getName().isEmpty()) {
             event.addField(AttributeNames.SPAN_NAME_FIELD, span.getName());
         }
-        if (span.getParentSpanId().isValid()) {
-            event.addField(AttributeNames.PARENT_ID_FIELD, span.getParentSpanId().toLowerBase16());
+        if (!span.getParentSpanId().isEmpty()) {
+            event.addField(AttributeNames.PARENT_ID_FIELD, span.getParentSpanId());
         }
         if (span.getKind() != null) {
             event.addField(AttributeNames.TYPE_FIELD, span.getKind().name());
@@ -69,32 +71,42 @@ public class HoneycombSpanExporter implements SpanExporter {
 
         // span attributes
         span.getAttributes().forEach(
-            (key, value) -> { addAttributeAsFields(event, key, value); }
+            new AttributeConsumer() {
+                @Override
+                public <T> void consume(AttributeKey<T> key, T value) {
+                    addAttributeAsField(event, key, value);
+                }
+            }
         );
 
         // resource attributes
         if (span.getResource() != null) {
             span.getResource().getAttributes().forEach(
-                (key, value) -> { addAttributeAsFields(event, key, value); }
+                new AttributeConsumer() {
+                    @Override
+                    public <T> void consume(AttributeKey<T> key, T value) {
+                        addAttributeAsField(event, key, value);
+                    }
+                }
             );
         }
 
         return event;
     }
 
-    private static void addAttributeAsFields(final Event event, final String key, final AttributeValue value) {
-        switch(value.getType()) {
+    private static <T> void addAttributeAsField(final Event event, final AttributeKey<T> key, final T value) {
+        switch(key.getType()) {
             case STRING:
-                event.addField(key, value.getStringValue());
+                event.addField(key.getKey(), (String) value);
                 break;
             case LONG:
-                event.addField(key, value.getLongValue());
+                event.addField(key.getKey(), (long) value);
                 break;
             case BOOLEAN:
-                event.addField(key, value.getBooleanValue());
+                event.addField(key.getKey(), (boolean) value);
                 break;
             case DOUBLE:
-                event.addField(key, value.getDoubleValue());
+                event.addField(key.getKey(), (double) value);
                 break;
         }
     }

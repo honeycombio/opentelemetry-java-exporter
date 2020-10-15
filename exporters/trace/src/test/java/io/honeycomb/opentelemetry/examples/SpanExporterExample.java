@@ -4,12 +4,10 @@ import io.honeycomb.opentelemetry.exporters.HoneycombSpanExporter;
 import io.opentelemetry.OpenTelemetry;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.trace.SpanProcessor;
-import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.trace.Span;
 import io.opentelemetry.trace.Span.Kind;
-import io.opentelemetry.trace.Status;
 import io.opentelemetry.trace.Tracer;
 import java.util.Random;
 
@@ -26,8 +24,9 @@ public class SpanExporterExample {
             .build();
 
         // 2. Create an OpenTelemetry span processor using the exporter and set it within the OpenTelemetry SDK
-        SpanProcessor spanProcessor = BatchSpanProcessor.newBuilder(exporter).build();
-        OpenTelemetrySdk.getTracerProvider().addSpanProcessor(spanProcessor);
+        OpenTelemetrySdk.getTracerManagement().addSpanProcessor(
+            SimpleSpanProcessor.newBuilder(exporter).build()
+        );
 
         // 3. Create an OpenTelemetry `Tracer` that can be used to create spans
         Tracer tracer = OpenTelemetry.getTracerProvider().get("sample-app", "1.0");
