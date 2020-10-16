@@ -1,7 +1,6 @@
-# OpenTelemetry Java plugins
+# opentelemetry-java
 
-This repository contains OpenTelemetry plugins for interacting with Honeycomb using the OpenTelemetry Java SDK.
+This repository contains OpenTelemetry plugins for interacting with Honeycomb using the [OpenTelemetry Java SDK](https://github.com/open-telemetry/opentelemetry-java).
 
-- [Deterministic Sampler](/samplers/deterministic/README.md)
-- [Span Exporter](/exporters/trace/README.md)
-
+- [Deterministic Sampler](/samplers/README.md)
+- [Span Exporter](/exporters/README.md)

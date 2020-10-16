@@ -37,7 +37,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
 			groupId = 'io.honeycomb.opentelemetry'
-            artifactId = 'opentelemetry-exporter-java'
+            artifactId = 'opentelemetry-exporters-java'
             version = '0.1.0'
             versionMapping {
                 usage('java-api') {
@@ -48,7 +48,7 @@ publishing {
                 }
             }
             pom {
-                name = 'Honeycomb OpenTelemetry Exporter for Java'
+                name = 'Honeycomb OpenTelemetry Exporters for Java'
                 description = 'Exports OpenTelemetry data to Honeycomb.'
                 url = 'https://docs.honeycomb.io/getting-data-in/open-standards/'
                 licenses {

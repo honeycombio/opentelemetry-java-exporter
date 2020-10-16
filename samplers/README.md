@@ -4,6 +4,24 @@ An OpenTelemetry trace sampler that uses a determinisitc algortihm based on a tr
 
 ## Installation
 
+Maven
+```
+<dependency>
+    <groupId>io.honeycomb.opentelemetry</groupId>
+    <artifactId>opentelemetry-samplers-java</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+Gradle
+```
+dependencies {
+    compile group: 'io.honeycomb.opentelemetry', name: 'opentelemetry-samplers-java', version: '0.1.0'
+}
+```
+
+## Configuration
+
 ```java
 // create the sampler, using a rate of 1 in 10 events to be sampled
 Sampler sampler = new DeterministicTraceSampler(10);
@@ -13,11 +31,10 @@ TraceConfig traceConfig = TraceConfig.getDefault().toBuilder().setSampler(
     sampler
 ).build();
 
-// use the trace config in the OpenTelemetrySdk
-OpenTelemetrySdk.getTracerProvider()
-    .updateActiveTraceConfig(
-        traceConfig
-    );
+// update the OpenTelemetrySdk's trace config
+OpenTelemetrySdk.getTracerProvider().updateActiveTraceConfig(
+    traceConfig
+);
 ```
 
 ## Example

@@ -1,41 +1,36 @@
 package io.honeycomb.opentelemetry.examples;
 
-import io.honeycomb.opentelemetry.exporters.HoneycombSpanExporter;
+import io.honeycomb.opentelemetry.samplers.DeterministicTraceSampler;
 import io.opentelemetry.OpenTelemetry;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
-import io.opentelemetry.sdk.trace.export.SpanExporter;
+import io.opentelemetry.sdk.trace.Sampler;
+import io.opentelemetry.sdk.trace.config.TraceConfig;
 import io.opentelemetry.trace.Span;
 import io.opentelemetry.trace.Span.Kind;
 import io.opentelemetry.trace.Tracer;
 import java.util.Random;
 
-public class SpanExporterExample {
+public class DeterministicSamplerExample {
 
     public static void main(String[] args) throws InterruptedException {
-        String apiKey = System.getenv("HONEYCOMB_APIKEY");
-        String dataset = System.getenv("HONEYCOMB_DATASET");
 
-        // 1. Create an instance of the Honeycomb exporter:
-        SpanExporter exporter = HoneycombSpanExporter.newBuilder("sample-app")
-            .writeKey(apiKey)
-            .dataSet(dataset)
-            .build();
+        // 1. Create an instance of the Deterministic sampler
+        Sampler sampler = new DeterministicTraceSampler(10);
 
-        // 2. Create an OpenTelemetry span processor using the exporter and set it within the OpenTelemetry SDK
-        OpenTelemetrySdk.getTracerManagement().addSpanProcessor(
-            SimpleSpanProcessor.newBuilder(exporter).build()
+        // 2. Create a copy of the OpenTelemtrySdk trace config and set the sampler
+        TraceConfig traceConfig = TraceConfig.getDefault().toBuilder().setSampler(sampler).build();
+
+        // 3. Update the OpenTelemetrySdk with the trace config
+        OpenTelemetrySdk.getTracerManagement().updateActiveTraceConfig(
+            traceConfig
         );
 
-        // 3. Create an OpenTelemetry `Tracer` that can be used to create spans
+        // 4. Create an OpenTelemetry `Tracer` that can be used to create spans
         Tracer tracer = OpenTelemetry.getTracerProvider().get("sample-app", "1.0");
 
-        // Manually instrument some simple work
+        // 5. Manually instrument some work
         doWork(tracer);
-
-        // Shutdown the exporter before closing. NOTE: This also flushes any pending spans before returning.
-        exporter.shutdown();
     }
 
     private static void doWork(Tracer tracer) throws InterruptedException {
