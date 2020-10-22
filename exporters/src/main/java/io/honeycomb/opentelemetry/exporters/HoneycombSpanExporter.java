@@ -7,6 +7,8 @@ import io.opentelemetry.common.AttributeKey;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+import io.opentelemetry.trace.SpanId;
+
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +63,7 @@ public class HoneycombSpanExporter implements SpanExporter {
         if (!span.getName().isEmpty()) {
             event.addField(AttributeNames.SPAN_NAME_FIELD, span.getName());
         }
-        if (!span.getParentSpanId().isEmpty()) {
+        if (SpanId.isValid(span.getParentSpanId())) {
             event.addField(AttributeNames.PARENT_ID_FIELD, span.getParentSpanId());
         }
         if (span.getKind() != null) {
