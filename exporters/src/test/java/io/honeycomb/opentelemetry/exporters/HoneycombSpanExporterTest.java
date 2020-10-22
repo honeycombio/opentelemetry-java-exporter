@@ -106,4 +106,21 @@ public class HoneycombSpanExporterTest {
         // verify(mockEvent, times(1)).addField("rBoolean", false);
         verifyNoMoreInteractions(mockClient);
     }
+
+    @Test
+    public void testSpanWithoutParentShouldNotSetParentIdAttribute() {
+        when(mockClient.createEvent()).thenReturn(mockEvent);
+        when(mockEvent.addField(any(String.class), any(Object.class))).thenReturn(mockEvent);
+        when(mockEvent.setTimestamp(any(Long.class))).thenReturn(mockEvent);
+
+        SpanData span = TestSpanData.newBuilder()
+            .setTraceId("000000000063d76f0000000037fe0393")
+            .setSpanId("000000000012d685")
+            .build();
+
+        HoneycombSpanExporter exporter = new HoneycombSpanExporter(mockClient, serviceName);
+        exporter.export(Arrays.asList(span));
+
+        verify(mockEvent, times(0)).addField(AttributeNames.PARENT_ID_FIELD, span.getParentSpanId());
+    }
 }
