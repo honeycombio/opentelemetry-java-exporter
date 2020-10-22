@@ -3,7 +3,6 @@ package io.honeycomb.opentelemetry.exporters;
 import io.honeycomb.libhoney.Event;
 import io.honeycomb.libhoney.HoneyClient;
 import io.opentelemetry.common.AttributeConsumer;
-import io.opentelemetry.common.Attributes;
 import io.opentelemetry.common.AttributeKey;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
@@ -48,7 +47,7 @@ public class HoneycombSpanExporter implements SpanExporter {
         return CompletableResultCode.ofSuccess();
     }
 
-    static Event createHoneycombEvent(final HoneyClient client, final String serviceName, final SpanData span) {
+    private static Event createHoneycombEvent(final HoneyClient client, final String serviceName, final SpanData span) {
         long start = TimeUnit.NANOSECONDS.toMillis(span.getStartEpochNanos());
         long duration = TimeUnit.NANOSECONDS.toMillis(Math.max(1, span.getEndEpochNanos() - span.getStartEpochNanos()));
 
@@ -107,6 +106,9 @@ public class HoneycombSpanExporter implements SpanExporter {
                 break;
             case DOUBLE:
                 event.addField(key.getKey(), (double) value);
+                break;
+            default:
+                // ignore
                 break;
         }
     }
