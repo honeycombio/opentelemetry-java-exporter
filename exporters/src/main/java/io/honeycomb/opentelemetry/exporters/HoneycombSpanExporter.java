@@ -60,7 +60,7 @@ public class HoneycombSpanExporter implements SpanExporter {
             .addField(AttributeNames.SPAN_ID_FIELD, span.getSpanId())
             .addField(AttributeNames.DURATION_FIELD, duration);
 
-        if (!span.getName().isEmpty()) {
+        if (span.getName() != null && !span.getName().isEmpty()) {
             event.addField(AttributeNames.SPAN_NAME_FIELD, span.getName());
         }
         if (SpanId.isValid(span.getParentSpanId())) {
