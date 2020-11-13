@@ -37,7 +37,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
 			groupId = 'io.honeycomb.opentelemetry'
-            artifactId = 'opentelemetry-samplers-java'
+            artifactId = 'honeycomb-opentelemetry-samplers'
             version = '0.1.0'
             versionMapping {
                 usage('java-api') {
