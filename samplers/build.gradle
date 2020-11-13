@@ -67,9 +67,9 @@ publishing {
                     }
                 }
                 scm {
-                    url = 'https://github.com/honeycombio/opentelemetry-exporter-java'
-                    connection = 'scm:git:git@github.com:honeycombio/opentelemetry-exporter-java.git'
-                    developerConnection = 'scm:git:git@github.com:honeycombio/opentelemetry-exporter-java.git'
+                    url = 'https://github.com/honeycombio/opentelemetry-java/tree/main/samplers'
+                    connection = 'scm:git:git@github.com:honeycombio/opentelemetry-java.git'
+                    developerConnection = 'scm:git:git@github.com:honeycombio/opentelemetry-java.git'
                 }
             }
         }
