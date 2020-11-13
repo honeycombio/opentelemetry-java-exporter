@@ -4,6 +4,7 @@ out/
 .project
 .settings
 .classpath
+gradle.properties
 
 # IDE(A) files
 .idea/
