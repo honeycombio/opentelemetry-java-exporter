@@ -8,7 +8,7 @@ Maven
 ```
 <dependency>
     <groupId>io.honeycomb.opentelemetry</groupId>
-    <artifactId>opentelemetry-exporters-java</artifactId>
+    <artifactId>honeycomb-opentelemetry-exporters</artifactId>
     <version>0.1.0</version>
 </dependency>
 ```
@@ -16,7 +16,7 @@ Maven
 Gradle
 ```
 dependencies {
-    compile group: 'io.honeycomb.opentelemetry', name: 'opentelemetry-exporters-java', version: '0.1.0'
+    compile group: 'io.honeycomb.opentelemetry', name: 'honeycomb-opentelemetry-exporters', version: '0.1.0'
 }
 ```
 
