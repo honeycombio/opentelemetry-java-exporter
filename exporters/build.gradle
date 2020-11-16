@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
-	id 'maven-publish'
-	id 'signing'
+    id 'maven-publish'
+    id 'signing'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -13,7 +13,7 @@ java {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
     jcenter()
 }
 
@@ -36,7 +36,8 @@ dependencies {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-			groupId = 'io.honeycomb.opentelemetry'
+            from components.java
+            groupId = 'io.honeycomb.opentelemetry'
             artifactId = 'honeycomb-opentelemetry-exporters'
             version = '0.1.0'
             versionMapping {
@@ -79,11 +80,11 @@ publishing {
             def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
             def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-			if (hasProperty ('sonatype.username'))
-				credentials {
-					username sonatypeUsername
-					password sonatypePassword
-				}
+            if (project.hasProperty ('sonatypeUsername'))
+                credentials {
+                    username sonatypeUsername
+                    password sonatypePassword
+                }
         }
     }
 }
